@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Digital Marketing & SEO Analytics — 1Fortuna</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:       #080a0f;
+    --surface:  #0e1119;
+    --card:     #131720;
+    --card2:    #171c27;
+    --border:   #1e2535;
+    --border2:  #2a3348;
+    --t1:       #f0f2f8;
+    --t2:       #6b7a9f;
+    --t3:       #2e3a52;
+    --lime:     #b4f000;
+    --coral:    #ff5f57;
+    --cyan:     #00d4ff;
+    --violet:   #8b5cf6;
+    --amber:    #ffb800;
+    --pink:     #ff3fa4;
+    --green:    #00e676;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; overflow-x: hidden; }
+
+  /* ── Ambient glow behind header ── */
+  body::before {
+    content: '';
+    position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 300px;
+    background: radial-gradient(ellipse, rgba(180,240,0,0.06) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── Header ── */
+  .header {
+    position: relative; z-index: 10;
+    background: rgba(14,17,25,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 58px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .h-brand { display: flex; align-items: center; gap: 14px; }
+  .h-logo {
+    height: 30px; display: flex; align-items: center; gap: 8px;
+  }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--lime); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #080a0f; letter-spacing: -0.05em;
+    font-family: 'DM Mono', monospace;
+  }
+  .logo-name { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+  .logo-name span { color: var(--lime); }
+  .h-divider { width: 1px; height: 20px; background: var(--border2); }
+  .h-sub { font-size: 11px; color: var(--t2); letter-spacing: 0.02em; }
+
+  .h-right { display: flex; align-items: center; gap: 16px; }
+  .h-kpi { text-align: right; }
+  .h-kpi-val { font-size: 16px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--lime); }
+  .h-kpi-lbl { font-size: 9px; color: var(--t2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .live-indicator { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--t2); }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── Channel strip ── */
+  .channel-strip {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 28px; display: flex; gap: 0;
+  }
+  .channel {
+    flex: 1; padding: 10px 16px; border-right: 1px solid var(--border);
+    cursor: pointer; transition: background 0.15s; position: relative;
+  }
+  .channel:last-child { border-right: none; }
+  .channel.active { background: rgba(180,240,0,0.04); }
+  .channel.active::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--lime);
+  }
+  .channel:hover:not(.active) { background: rgba(255,255,255,0.02); }
+  .ch-name { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--t2); margin-bottom: 4px; }
+  .ch-val  { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; line-height: 1; }
+  .ch-delta { font-size: 10px; margin-top: 3px; }
+  .up   { color: var(--lime); }
+  .down { color: var(--coral); }
+  .neu  { color: var(--t2); }
+
+  /* ── Main layout ── */
+  .main { padding: 18px 28px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── Hero metric row ── */
+  .hero-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .hero-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .hero-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .hero-card::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 1px;
+  }
+  .hc-lime::after   { background: var(--lime); }
+  .hc-coral::after  { background: var(--coral); }
+  .hc-cyan::after   { background: var(--cyan); }
+  .hc-violet::after { background: var(--violet); }
+  .hc-amber::after  { background: var(--amber); }
+
+  .hero-icon { font-size: 18px; margin-bottom: 10px; }
+  .hero-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--t2); margin-bottom: 5px; }
+  .hero-val { font-size: 24px; font-weight: 700; font-family: 'DM Mono', monospace; line-height: 1; letter-spacing: -0.02em; }
+  .hero-delta { font-size: 10px; margin-top: 5px; }
+  .hero-sub { font-size: 9px; color: var(--t3); margin-top: 3px; }
+
+  /* ── Chart grid ── */
+  .row-main { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+  .row-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+  }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .card-title { font-size: 12px; font-weight: 600; letter-spacing: -0.01em; }
+  .card-sub   { font-size: 10px; color: var(--t2); margin-top: 2px; }
+  .card-tag {
+    font-size: 9px; font-family: 'DM Mono', monospace;
+    background: var(--card2); border: 1px solid var(--border2);
+    border-radius: 3px; padding: 2px 6px; color: var(--t2); white-space: nowrap;
+  }
+
+  /* ── SEO Keyword Table ── */
+  .kw-row {
+    display: grid; grid-template-columns: 1fr auto auto auto auto;
+    align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .kw-row:last-child { border-bottom: none; }
+  .kw-name { font-weight: 500; }
+  .kw-vol  { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--t2); text-align: right; }
+  .kw-pos  { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; text-align: center; width: 28px; }
+  .kw-chg  { font-size: 10px; text-align: right; width: 36px; }
+  .pos-bar { width: 70px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .pos-fill { height: 100%; border-radius: 2px; }
+
+  /* ── Campaign table ── */
+  .camp-row {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 80px;
+    align-items: center; gap: 8px;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 11px;
+  }
+  .camp-row.header-row { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t2); padding-bottom: 8px; }
+  .camp-row:last-child { border-bottom: none; }
+  .camp-name { font-weight: 500; }
+  .mono { font-family: 'DM Mono', monospace; font-size: 10px; }
+  .roas-pill {
+    display: inline-block; border-radius: 4px; padding: 2px 7px;
+    font-size: 10px; font-weight: 700; font-family: 'DM Mono', monospace;
+  }
+  .roas-hot  { background: rgba(180,240,0,0.12); color: var(--lime); }
+  .roas-warm { background: rgba(255,184,0,0.12); color: var(--amber); }
+  .roas-cold { background: rgba(255,95,87,0.12);  color: var(--coral); }
+
+  /* ── Funnel viz ── */
+  .funnel-viz { display: flex; flex-direction: column; gap: 6px; }
+  .funnel-step-row { display: flex; align-items: center; gap: 10px; }
+  .funnel-label { font-size: 10px; color: var(--t2); width: 90px; text-align: right; flex-shrink: 0; }
+  .funnel-track { flex: 1; height: 28px; background: var(--border); border-radius: 4px; overflow: hidden; position: relative; }
+  .funnel-fill  { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; transition: width 0.6s ease; }
+  .funnel-fill-text { font-size: 10px; font-weight: 600; font-family: 'DM Mono', monospace; color: #080a0f; }
+  .funnel-num { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--t2); width: 55px; text-align: right; flex-shrink: 0; }
+  .funnel-pct { font-size: 9px; color: var(--t3); width: 32px; text-align: right; flex-shrink: 0; }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 12px 28px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; color: var(--t3);
+  }
+  .footer a { color: var(--lime); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="h-brand">
+    <div class="h-logo">
+      <div class="logo-mark">1F</div>
+      <div class="logo-name"><span>1</span>Fortuna Advertising</div>
+    </div>
+    <div class="h-divider"></div>
+    <div class="h-sub">Digital Marketing &amp; SEO Command Center · Q2 2026</div>
+  </div>
+  <div class="h-right">
+    <div class="h-kpi">
+      <div class="h-kpi-val">$4.21M</div>
+      <div class="h-kpi-lbl">Total Ad Spend Managed</div>
+    </div>
+    <div class="h-divider"></div>
+    <div class="h-kpi">
+      <div class="h-kpi-val" style="color:var(--cyan)">3.84×</div>
+      <div class="h-kpi-lbl">Blended ROAS</div>
+    </div>
+    <div class="h-divider"></div>
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      <span>Live · Jun 2026</span>
+    </div>
+  </div>
+</header>
+
+<!-- Channel Strip -->
+<div class="channel-strip">
+  <div class="channel active">
+    <div class="ch-name">Organic Search</div>
+    <div class="ch-val" style="color:var(--lime)">284K</div>
+    <div class="ch-delta up">▲ 31% YoY sessions</div>
+  </div>
+  <div class="channel">
+    <div class="ch-name">Paid Search</div>
+    <div class="ch-val" style="color:var(--cyan)">$1.84M</div>
+    <div class="ch-delta up">▲ 4.2× ROAS</div>
+  </div>
+  <div class="channel">
+    <div class="ch-name">Paid Social</div>
+    <div class="ch-val" style="color:var(--pink)">$1.12M</div>
+    <div class="ch-delta up">▲ 3.1× ROAS</div>
+  </div>
+  <div class="channel">
+    <div class="ch-name">Email</div>
+    <div class="ch-val" style="color:var(--amber)">38.4%</div>
+    <div class="ch-delta up">▲ Open rate +4.1pp</div>
+  </div>
+  <div class="channel">
+    <div class="ch-name">Display / Programmatic</div>
+    <div class="ch-val" style="color:var(--violet)">$1.25M</div>
+    <div class="ch-delta down">▼ 2.8× ROAS</div>
+  </div>
+  <div class="channel">
+    <div class="ch-name">Direct / Referral</div>
+    <div class="ch-val" style="color:var(--t1)">61K</div>
+    <div class="ch-delta neu">→ Stable</div>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- Hero KPIs -->
+  <div class="hero-row">
+    <div class="hero-card hc-lime">
+      <div class="hero-icon">🔍</div>
+      <div class="hero-lbl">Organic Sessions</div>
+      <div class="hero-val" style="color:var(--lime)">284,120</div>
+      <div class="hero-delta up">▲ 31.4% vs LY</div>
+      <div class="hero-sub">SEMrush · GSC verified</div>
+    </div>
+    <div class="hero-card hc-coral">
+      <div class="hero-icon">💸</div>
+      <div class="hero-lbl">Total Ad Spend</div>
+      <div class="hero-val" style="color:var(--coral)">$4.21M</div>
+      <div class="hero-delta up">▲ 18.2% budget growth</div>
+      <div class="hero-sub">All channels · QTD</div>
+    </div>
+    <div class="hero-card hc-cyan">
+      <div class="hero-icon">📈</div>
+      <div class="hero-lbl">Revenue Attributed</div>
+      <div class="hero-val" style="color:var(--cyan)">$16.2M</div>
+      <div class="hero-delta up">▲ 3.84× blended ROAS</div>
+      <div class="hero-sub">GA4 last-click + model</div>
+    </div>
+    <div class="hero-card hc-violet">
+      <div class="hero-icon">🎯</div>
+      <div class="hero-lbl">Leads Generated</div>
+      <div class="hero-val" style="color:var(--violet)">8,847</div>
+      <div class="hero-delta up">▲ 22.6% vs prior qtr</div>
+      <div class="hero-sub">CPL: $47.60 avg</div>
+    </div>
+    <div class="hero-card hc-amber">
+      <div class="hero-icon">⚡</div>
+      <div class="hero-lbl">Avg CTR (Paid)</div>
+      <div class="hero-val" style="color:var(--amber)">4.87%</div>
+      <div class="hero-delta up">▲ +0.9pp vs benchmark</div>
+      <div class="hero-sub">Google Ads · All camps</div>
+    </div>
+  </div>
+
+  <!-- Organic trend + Channel ROAS -->
+  <div class="row-main">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Organic Traffic vs Paid Traffic — L12M</div>
+          <div class="card-sub">Sessions by channel · Monthly · SEO growth trajectory</div>
+        </div>
+        <span class="card-tag">Stacked Area</span>
+      </div>
+      <canvas id="trafficChart" height="170"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">ROAS by Channel</div>
+          <div class="card-sub">Return on ad spend · QTD</div>
+        </div>
+        <span class="card-tag">Bar</span>
+      </div>
+      <canvas id="roasChart" height="170"></canvas>
+    </div>
+  </div>
+
+  <!-- SEO keywords + Campaign table -->
+  <div class="row-two">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Top Keyword Rankings</div>
+          <div class="card-sub">Position tracking · Google · Desktop · US</div>
+        </div>
+        <span class="card-tag">SEMrush</span>
+      </div>
+      <div>
+        <div class="kw-row" style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t2);padding-bottom:8px;border-bottom:1px solid var(--border2)">
+          <span>Keyword</span><span style="text-align:right">Vol/Mo</span><span style="text-align:center">Pos</span><span style="text-align:right">Chg</span><span>Trend</span>
+        </div>
+        <div id="kwTable"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Active Campaign Performance</div>
+          <div class="card-sub">Google Ads · Meta · Spend, CTR, ROAS · QTD</div>
+        </div>
+        <span class="card-tag">Live</span>
+      </div>
+      <div class="camp-row header-row">
+        <span>Campaign</span><span>Spend</span><span>Clicks</span><span>CTR</span><span>Conv.</span><span>ROAS</span>
+      </div>
+      <div id="campTable"></div>
+    </div>
+  </div>
+
+  <!-- Conversion Funnel + Spend Mix + Weekly Leads -->
+  <div class="row-three">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Conversion Funnel</div>
+          <div class="card-sub">Traffic → Lead → MQL → SQL → Close</div>
+        </div>
+        <span class="card-tag">Funnel</span>
+      </div>
+      <div class="funnel-viz" id="funnelViz"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Budget Allocation</div>
+          <div class="card-sub">Spend distribution by channel · QTD</div>
+        </div>
+        <span class="card-tag">Donut</span>
+      </div>
+      <canvas id="spendChart" height="200"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Weekly Leads &amp; CPL Trend</div>
+          <div class="card-sub">Lead volume vs cost per lead · L10W</div>
+        </div>
+        <span class="card-tag">Dual-axis</span>
+      </div>
+      <canvas id="leadsChart" height="200"></canvas>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <span>Digital Marketing &amp; SEO Analytics · <a href="https://1fortuna.com" target="_blank">1Fortuna Advertising LLC</a> · Built by <a href="https://github.com/aditcher" target="_blank">Aaron Ditcher</a></span>
+  <span>Data: Illustrative / Sample · Portfolio demonstration only</span>
+</footer>
+
+<script>
+  const GRID = 'rgba(30,37,53,0.8)';
+  const TICK = '#6b7a9f';
+  Chart.defaults.font.family = "'DM Sans', sans-serif";
+  Chart.defaults.color = TICK;
+
+  const months = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+
+  // ── Traffic stacked area ──
+  const organic = [18,19,21,22,20,23,22,24,25,26,27,28].map(v=>v*1000);
+  const paid    = [14,15,14,16,15,17,16,17,16,18,17,18].map(v=>v*1000);
+  const email   = [4,4,5,4,5,5,4,5,5,5,6,6].map(v=>v*1000);
+
+  new Chart(document.getElementById('trafficChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label:'Organic', data:organic, borderColor:'#b4f000', backgroundColor:'rgba(180,240,0,0.12)', borderWidth:2, fill:true, tension:0.4, pointRadius:2 },
+        { label:'Paid',    data:paid,    borderColor:'#00d4ff', backgroundColor:'rgba(0,212,255,0.07)',  borderWidth:2, fill:true, tension:0.4, pointRadius:2 },
+        { label:'Email',   data:email,   borderColor:'#ffb800', backgroundColor:'rgba(255,184,0,0.05)',  borderWidth:1.5, fill:true, tension:0.4, pointRadius:2 },
+      ]
+    },
+    options: {
+      responsive:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ labels:{ font:{size:10}, boxWidth:10 } } },
+      scales:{
+        x:{ grid:{color:GRID}, ticks:{font:{size:9}} },
+        y:{ grid:{color:GRID}, ticks:{ font:{size:10}, callback:v=>(v/1000).toFixed(0)+'K' } }
+      }
+    }
+  });
+
+  // ── ROAS bar ──
+  new Chart(document.getElementById('roasChart').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels:['Paid Search','Paid Social','Email','Display','Affiliate'],
+      datasets:[{
+        label:'ROAS',
+        data:[4.2, 3.1, 8.4, 2.8, 5.1],
+        backgroundColor:['rgba(0,212,255,.7)','rgba(255,63,164,.7)','rgba(255,184,0,.7)','rgba(139,92,246,.7)','rgba(180,240,0,.7)'],
+        borderRadius:5, borderSkipped:false,
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false},
+        annotation:{ annotations:{ line1:{ type:'line', yMin:3, yMax:3, borderColor:'rgba(255,95,87,.4)', borderWidth:1.5, borderDash:[4,3] } } }
+      },
+      scales:{
+        x:{ grid:{display:false}, ticks:{font:{size:10}} },
+        y:{ grid:{color:GRID}, ticks:{ font:{size:10}, callback:v=>v+'×' }, min:0, max:10 }
+      }
+    }
+  });
+
+  // ── Spend donut ──
+  new Chart(document.getElementById('spendChart').getContext('2d'), {
+    type:'doughnut',
+    data:{
+      labels:['Paid Search','Display','Paid Social','Email','Affiliate'],
+      datasets:[{
+        data:[44, 30, 16, 6, 4],
+        backgroundColor:['rgba(0,212,255,.75)','rgba(139,92,246,.75)','rgba(255,63,164,.75)','rgba(255,184,0,.75)','rgba(180,240,0,.75)'],
+        borderColor:'#131720', borderWidth:3,
+      }]
+    },
+    options:{
+      cutout:'62%',
+      plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:10, padding:8 } } }
+    }
+  });
+
+  // ── Leads + CPL dual axis ──
+  const weeks10 = ['W8','W9','W10','W11','W12','W13','W14','W15','W16','W17'];
+  const leads   = [720,780,810,850,790,880,920,870,940,980];
+  const cpl     = [52,50,49,48,51,47,45,46,44,43];
+
+  new Chart(document.getElementById('leadsChart').getContext('2d'), {
+    data:{
+      labels:weeks10,
+      datasets:[
+        { type:'bar',  label:'Leads', data:leads, backgroundColor:'rgba(139,92,246,.55)', borderRadius:3, yAxisID:'y' },
+        { type:'line', label:'CPL ($)', data:cpl, borderColor:'#ffb800', borderWidth:2, pointRadius:3, pointBackgroundColor:'#ffb800', tension:0.3, yAxisID:'y1' }
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ labels:{ font:{size:10}, boxWidth:10 } } },
+      scales:{
+        x:{ grid:{color:GRID}, ticks:{font:{size:9}} },
+        y:{ grid:{color:GRID}, ticks:{font:{size:10}}, position:'left' },
+        y1:{ grid:{drawOnChartArea:false}, ticks:{ font:{size:10}, callback:v=>'$'+v }, position:'right', min:30, max:70 }
+      }
+    }
+  });
+
+  // ── Keyword table ──
+  const keywords = [
+    ['advertising agency houston', '2,400', 3, '+2', 91],
+    ['digital marketing services', '8,100', 7, '+5', 74],
+    ['SEO company texas', '1,900', 4, '0',  88],
+    ['ppc management agency', '3,200', 5, '+3', 82],
+    ['google ads management', '5,400', 9, '+4', 66],
+    ['social media marketing agency', '6,600', 12, '+6', 55],
+    ['email marketing services', '4,400', 6, '+1', 79],
+    ['local SEO services', '2,900', 8, '+2', 70],
+    ['content marketing agency', '3,800', 14, '-1', 48],
+    ['HubSpot marketing agency', '1,200', 2, '+1', 94],
+  ];
+  const kwEl = document.getElementById('kwTable');
+  keywords.forEach(([kw, vol, pos, chg, score]) => {
+    const color = pos <= 3 ? 'var(--lime)' : pos <= 10 ? 'var(--amber)' : 'var(--coral)';
+    const chgColor = chg.startsWith('+') ? 'var(--lime)' : chg === '0' ? 'var(--t2)' : 'var(--coral)';
+    kwEl.innerHTML += `
+      <div class="kw-row">
+        <span class="kw-name">${kw}</span>
+        <span class="kw-vol">${vol}</span>
+        <span class="kw-pos" style="color:${color}">${pos}</span>
+        <span class="kw-chg" style="color:${chgColor}">${chg}</span>
+        <div class="pos-bar"><div class="pos-fill" style="width:${score}%;background:${color};opacity:.6"></div></div>
+      </div>`;
+  });
+
+  // ── Campaign table ──
+  const campaigns = [
+    ['Brand - Google Search', '$84,200', '42,100', '6.8%', '1,240', 5.8, 'hot'],
+    ['Non-Brand - Google Search', '$210,400', '88,400', '4.2%', '1,840', 3.9, 'hot'],
+    ['Remarketing - Display', '$62,100', '280,000', '1.1%', '410', 2.8, 'warm'],
+    ['Meta - Lead Gen', '$98,700', '34,200', '3.8%', '920', 3.2, 'warm'],
+    ['YouTube - Awareness', '$44,200', '180,000', '0.8%', '180', 1.9, 'cold'],
+    ['Competitor - Search', '$38,900', '14,100', '5.1%', '290', 3.4, 'warm'],
+  ];
+  const campEl = document.getElementById('campTable');
+  campaigns.forEach(([name, spend, clicks, ctr, conv, roas, tier]) => {
+    const pillClass = tier === 'hot' ? 'roas-hot' : tier === 'warm' ? 'roas-warm' : 'roas-cold';
+    campEl.innerHTML += `
+      <div class="camp-row">
+        <span class="camp-name">${name}</span>
+        <span class="mono">${spend}</span>
+        <span class="mono">${parseInt(clicks).toLocaleString()}</span>
+        <span class="mono">${ctr}</span>
+        <span class="mono">${parseInt(conv).toLocaleString()}</span>
+        <span><span class="roas-pill ${pillClass}">${roas}×</span></span>
+      </div>`;
+  });
+
+  // ── Funnel ──
+  const funnelData = [
+    ['Sessions',  '345,000', 100, 'rgba(180,240,0,.75)'],
+    ['Engaged',   '98,200',  28,  'rgba(0,212,255,.75)'],
+    ['Leads',     '8,847',   2.6, 'rgba(139,92,246,.75)'],
+    ['MQL',       '3,104',   0.9, 'rgba(255,184,0,.75)'],
+    ['SQL',       '1,241',   0.36,'rgba(255,63,164,.75)'],
+    ['Closed Won','384',     0.11,'rgba(180,240,0,.9)'],
+  ];
+  const funnelEl = document.getElementById('funnelViz');
+  funnelData.forEach(([label, val, pct, color]) => {
+    funnelEl.innerHTML += `
+      <div class="funnel-step-row">
+        <div class="funnel-label">${label}</div>
+        <div class="funnel-track">
+          <div class="funnel-fill" style="width:${Math.max(pct,2)}%;background:${color}">
+            <span class="funnel-fill-text">${pct >= 5 ? val : ''}</span>
+          </div>
+        </div>
+        <div class="funnel-num">${val}</div>
+        <div class="funnel-pct">${pct}%</div>
+      </div>`;
+  });
+</script>
+</body>
+</html>
