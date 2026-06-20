@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Analytics Dashboard Portfolio — Aaron Ditcher</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --card: #16191f;
+    --border: #252932;
+    --t1: #dde1f0;
+    --t2: #737b96;
+    --t3: #3a3f52;
+    --blue: #4f6ef7;
+    --green: #36d79c;
+    --amber: #f5a623;
+    --purple: #9f7aea;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; }
+
+  .header {
+    max-width: 900px; margin: 0 auto;
+    padding: 60px 28px 40px;
+  }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 14px;
+  }
+  h1 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 14px; }
+  h1 span { color: var(--blue); }
+  .subtitle { font-size: 15px; color: var(--t2); line-height: 1.65; max-width: 560px; }
+
+  .skills-row {
+    max-width: 900px; margin: 0 auto; padding: 0 28px 40px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .skill-tag {
+    font-size: 11px; font-weight: 500; font-family: 'JetBrains Mono', monospace;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 10px; color: var(--t2);
+  }
+
+  .grid { max-width: 900px; margin: 0 auto; padding: 0 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    text-decoration: none; color: inherit;
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); border-color: var(--blue); }
+
+  .card-preview {
+    height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; position: relative; overflow: hidden;
+  }
+  .card-preview::before {
+    content: ''; position: absolute; inset: 0;
+    opacity: 0.12;
+  }
+  .preview-telecom { background: linear-gradient(135deg, #0d2844, #1a4a7a); }
+  .preview-retail  { background: linear-gradient(135deg, #1a1040, #2d1b6e); }
+  .preview-pipeline{ background: linear-gradient(135deg, #0a2a1a, #1a4a30); }
+
+  .mini-chart {
+    position: absolute; bottom: 12px; left: 12px; right: 12px;
+    display: flex; align-items: flex-end; gap: 3px; height: 50px;
+  }
+  .mini-bar {
+    flex: 1; border-radius: 2px 2px 0 0; opacity: 0.6;
+  }
+
+  .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+  .card-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .card-desc  { font-size: 11px; color: var(--t2); line-height: 1.55; flex: 1; }
+  .card-tags  { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 12px; }
+  .tag {
+    font-size: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 3px; padding: 2px 7px; color: var(--t3);
+  }
+  .card-footer {
+    padding: 10px 16px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; color: var(--t3);
+  }
+  .open-btn {
+    font-size: 10px; font-weight: 600; color: var(--blue);
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .footer-section {
+    max-width: 900px; margin: 0 auto;
+    padding: 48px 28px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-left {}
+  .footer-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .footer-role { font-size: 12px; color: var(--t2); }
+  .footer-links { display: flex; gap: 12px; }
+  .footer-link {
+    font-size: 11px; color: var(--blue); text-decoration: none;
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(79,110,247,0.08); border: 1px solid rgba(79,110,247,0.2);
+    border-radius: 5px; padding: 6px 12px;
+    transition: background 0.15s;
+  }
+  .footer-link:hover { background: rgba(79,110,247,0.15); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Analytics Dashboard Portfolio</div>
+  <h1>Data Storytelling<br>with <span>Business Impact</span></h1>
+  <p class="subtitle">Interactive BI dashboards demonstrating KPI design, data visualization, and analytical thinking across telecom, retail, and operational domains.</p>
+</div>
+
+<div class="skills-row">
+  <span class="skill-tag">SQL</span>
+  <span class="skill-tag">Power BI</span>
+  <span class="skill-tag">Tableau</span>
+  <span class="skill-tag">Python</span>
+  <span class="skill-tag">Snowflake</span>
+  <span class="skill-tag">ETL/ELT</span>
+  <span class="skill-tag">KPI Governance</span>
+  <span class="skill-tag">Chart.js</span>
+  <span class="skill-tag">DAX</span>
+  <span class="skill-tag">13+ Yrs Experience</span>
+</div>
+
+<div class="grid">
+
+  <!-- Telecom -->
+  <a class="card" href="telecom/index.html">
+    <div class="card-preview preview-telecom">
+      <div class="mini-chart">
+        <div class="mini-bar" style="height:45%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:55%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:60%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:52%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:70%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:65%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:80%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:75%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:90%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:85%;background:#58a6ff"></div>
+        <div class="mini-bar" style="height:95%;background:#3fb950"></div>
+        <div class="mini-bar" style="height:100%;background:#3fb950"></div>
+      </div>
+      📡
+    </div>
+    <div class="card-body">
+      <div class="card-label" style="color:#58a6ff">Telecom</div>
+      <div class="card-title">Revenue &amp; Churn Analytics</div>
+      <div class="card-desc">Subscriber metrics, ARPU trends, churn rate analysis, and regional market performance — modeled on consumer broadband operations.</div>
+      <div class="card-tags">
+        <span class="tag">Churn Rate</span>
+        <span class="tag">ARPU</span>
+        <span class="tag">NPS</span>
+        <span class="tag">Dual-Axis</span>
+        <span class="tag">Filters</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span>5 KPIs · 5 Charts · Sortable Table</span>
+      <span class="open-btn">View Dashboard →</span>
+    </div>
+  </a>
+
+  <!-- Retail -->
+  <a class="card" href="retail/index.html">
+    <div class="card-preview preview-retail">
+      <div class="mini-chart">
+        <div class="mini-bar" style="height:50%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:60%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:55%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:70%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:80%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:75%;background:#6c7aed"></div>
+        <div class="mini-bar" style="height:85%;background:#4ade80"></div>
+        <div class="mini-bar" style="height:90%;background:#4ade80"></div>
+        <div class="mini-bar" style="height:88%;background:#4ade80"></div>
+        <div class="mini-bar" style="height:95%;background:#4ade80"></div>
+        <div class="mini-bar" style="height:100%;background:#4ade80"></div>
+        <div class="mini-bar" style="height:97%;background:#4ade80"></div>
+      </div>
+      🛒
+    </div>
+    <div class="card-body">
+      <div class="card-label" style="color:#a78bfa">Retail</div>
+      <div class="card-title">Sales Performance Dashboard</div>
+      <div class="card-desc">Multi-channel sales analytics with target attainment, category performance, store leaderboard, and basket size metrics — retail operations focus.</div>
+      <div class="card-tags">
+        <span class="tag">Vs Target</span>
+        <span class="tag">Leaderboard</span>
+        <span class="tag">Channel Mix</span>
+        <span class="tag">Daily Trend</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span>6 KPIs · 5 Charts · Progress Rows</span>
+      <span class="open-btn">View Dashboard →</span>
+    </div>
+  </a>
+
+  <!-- Pipeline -->
+  <a class="card" href="pipeline/index.html">
+    <div class="card-preview preview-pipeline">
+      <div class="mini-chart">
+        <div class="mini-bar" style="height:100%;background:#4f6ef7"></div>
+        <div class="mini-bar" style="height:66%;background:#22d3ee"></div>
+        <div class="mini-bar" style="height:26%;background:#36d79c"></div>
+        <div class="mini-bar" style="height:13%;background:#f5a623"></div>
+        <div class="mini-bar" style="height:6%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:2%;background:#ec4899"></div>
+      </div>
+      📊
+    </div>
+    <div class="card-body">
+      <div class="card-label" style="color:#36d79c">Operations</div>
+      <div class="card-title">Job Search Pipeline Tracker</div>
+      <div class="card-desc">BI applied to the job search itself — application funnel, match score distribution, conversion rates by channel, and active pipeline log.</div>
+      <div class="card-tags">
+        <span class="tag">Funnel</span>
+        <span class="tag">Conversion</span>
+        <span class="tag">Waterfall</span>
+        <span class="tag">Log Table</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span>4 KPIs · 5 Charts · Application Log</span>
+      <span class="open-btn">View Dashboard →</span>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer-section">
+  <div class="footer-left">
+    <div class="footer-name">Aaron Ditcher</div>
+    <div class="footer-role">Senior Data &amp; Analytics · Spring, TX · 13+ Years Experience</div>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/aditcher" target="_blank">⚡ GitHub: aditcher</a>
+    <a class="footer-link" href="https://www.linkedin.com/in/aaronditcher" target="_blank">🔗 LinkedIn</a>
+  </div>
+</div>
+
+</body>
+</html>
