@@ -68,6 +68,8 @@
   .preview-telecom { background: linear-gradient(135deg, #0d2844, #1a4a7a); }
   .preview-retail  { background: linear-gradient(135deg, #1a1040, #2d1b6e); }
   .preview-pipeline{ background: linear-gradient(135deg, #0a2a1a, #1a4a30); }
+  .preview-dataforge { background: linear-gradient(135deg, #0a1628, #0f2a4a); }
+  .preview-exceltodll { background: linear-gradient(135deg, #1a0a28, #2d0f4a); }
 
   .mini-chart {
     position: absolute; bottom: 12px; left: 12px; right: 12px;
@@ -97,6 +99,25 @@
   .open-btn {
     font-size: 10px; font-weight: 600; color: var(--blue);
     display: flex; align-items: center; gap: 4px;
+  }
+
+  .section-divider {
+    max-width: 900px; margin: 48px auto 0; padding: 0 28px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--t2); margin-top: 24px; margin-bottom: 4px;
+  }
+  .section-desc {
+    font-size: 13px; color: var(--t2); line-height: 1.55;
+  }
+
+  .build-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    background: rgba(54,215,156,0.08); border: 1px solid rgba(54,215,156,0.2);
+    border-radius: 4px; padding: 3px 8px; color: var(--green); margin-top: 8px;
   }
 
   .footer-section {
@@ -280,6 +301,89 @@
     <div class="card-footer">
       <span>5 KPIs · 6 Charts · Campaign Log</span>
       <span class="open-btn">View Dashboard →</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- GitHub Tools Section -->
+<div class="section-divider">
+  <div class="section-label">Open Source Tools</div>
+  <div class="section-desc">Desktop applications built and published to GitHub — cross-platform (macOS + Windows), packaged with PyInstaller and GitHub Actions CI/CD.</div>
+</div>
+
+<div class="grid" style="margin-top:0; padding-top:0;">
+
+  <!-- DataForge -->
+  <a class="card" href="https://github.com/aditcher/dataforge" target="_blank">
+    <div class="card-preview preview-dataforge">
+      <div class="mini-chart">
+        <div class="mini-bar" style="height:60%;background:#4f6ef7"></div>
+        <div class="mini-bar" style="height:75%;background:#4f6ef7"></div>
+        <div class="mini-bar" style="height:55%;background:#22d3ee"></div>
+        <div class="mini-bar" style="height:90%;background:#22d3ee"></div>
+        <div class="mini-bar" style="height:70%;background:#36d79c"></div>
+        <div class="mini-bar" style="height:85%;background:#36d79c"></div>
+        <div class="mini-bar" style="height:65%;background:#4f6ef7"></div>
+        <div class="mini-bar" style="height:95%;background:#4f6ef7"></div>
+        <div class="mini-bar" style="height:80%;background:#22d3ee"></div>
+        <div class="mini-bar" style="height:100%;background:#36d79c"></div>
+      </div>
+      🗄️
+    </div>
+    <div class="card-body">
+      <div class="card-label" style="color:#4f6ef7">Python · tkinter · DuckDB · Flask</div>
+      <div class="card-title">DataForge v2.0 — Power BI Edition</div>
+      <div class="card-desc">Desktop app: Excel/CSV → automated cleaning → DDL + DML across 5 SQL dialects → Power BI export (M code, staged CSV, MERGE SQL) → live Chart.js dashboard via embedded Flask + DuckDB.</div>
+      <div class="card-tags">
+        <span class="tag">Snowflake</span>
+        <span class="tag">SQL Server</span>
+        <span class="tag">Power BI</span>
+        <span class="tag">DuckDB</span>
+        <span class="tag">Flask</span>
+        <span class="tag">Chart.js</span>
+      </div>
+      <div class="build-badge">✓ macOS DMG + Windows EXE</div>
+    </div>
+    <div class="card-footer">
+      <span>7 modules · GitHub Actions CI/CD</span>
+      <span class="open-btn">View on GitHub →</span>
+    </div>
+  </a>
+
+  <!-- Excel to DDL -->
+  <a class="card" href="https://github.com/aditcher/excel-to-ddl" target="_blank">
+    <div class="card-preview preview-exceltodll">
+      <div class="mini-chart">
+        <div class="mini-bar" style="height:100%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:80%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:90%;background:#c084fc"></div>
+        <div class="mini-bar" style="height:70%;background:#c084fc"></div>
+        <div class="mini-bar" style="height:85%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:60%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:75%;background:#c084fc"></div>
+        <div class="mini-bar" style="height:95%;background:#c084fc"></div>
+        <div class="mini-bar" style="height:65%;background:#9f7aea"></div>
+        <div class="mini-bar" style="height:88%;background:#9f7aea"></div>
+      </div>
+      📋
+    </div>
+    <div class="card-body">
+      <div class="card-label" style="color:#9f7aea">Python · tkinter · openpyxl</div>
+      <div class="card-title">Excel-to-DDL Automator</div>
+      <div class="card-desc">Desktop app that converts Excel datasets to production SQL schema across five dialects (Snowflake, SQL Server, MySQL, PostgreSQL, Oracle) — type inference, PK/FK detection, and clean column naming.</div>
+      <div class="card-tags">
+        <span class="tag">Snowflake</span>
+        <span class="tag">T-SQL</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Oracle</span>
+      </div>
+      <div class="build-badge">✓ macOS DMG + Windows EXE</div>
+    </div>
+    <div class="card-footer">
+      <span>Type inference · 5 SQL dialects</span>
+      <span class="open-btn">View on GitHub →</span>
     </div>
   </a>
 
